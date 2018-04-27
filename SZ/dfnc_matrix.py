@@ -1,5 +1,4 @@
 import numpy as np
-import matplotlib.pyplot as plt
 import os
 
 #this function cut each subject in three subparts
@@ -83,8 +82,8 @@ if __name__=="__main__":
 	filename_sz = os.listdir("SZ")
 	for filename in filename_sz: 
 		subject = np.loadtxt(open("SZ/"+filename, "rb"), delimiter=",")
-		SCM = static_connectivity_matrix(subject)
-		sz_one_dim.append(features(SCM))
+		static_CM = static_connectivity_matrix(subject)
+		sz_one_dim.append(features(static_CM))
 		win_set = window_per_people(subject)
 		sz_dynamic_matrix.append(dynamical_connectivity(win_set))
 	
@@ -93,8 +92,8 @@ if __name__=="__main__":
 	filename_control = os.listdir("CONTROL")
 	for filename in filename_control:
 		subject = np.loadtxt(open("CONTROL/"+filename, "rb"), delimiter=",")
-		SCM = static_connectivity_matrix(subject)
-		control_one_dim.append(features(SCM))
+		static_CM = static_connectivity_matrix(subject)
+		control_one_dim.append(features(static_CM))
 		win_set = window_per_people(subject)
 		control_dynamic_matrix.append(dynamical_connectivity(win_set))
 	
