@@ -50,13 +50,16 @@ def features(correlation_matrix_static):
 	vec_1D_per_subject_static=[0]
 		
 	#we take triangular superior of the correlation matrix 
-	triangular_sup = np.triu(corr,k=0)
-	
+	triangular_sup = np.triu(corr,k=1)
+	'''
 	#transformation of the triangular matrix in 1D vector  
 	vec_1D_per_subject_static=vec_1D_per_subject_static+list(triangular_sup[np.triu_indices(96)])
 	
 	del vec_1D_per_subject_static[0]# delete the initial value
-	 
+        '''	 
+        rows, cols = np.nonzero(triangular_sup)
+        vec_1D_per_subject_static = triangular_sup[rows, cols]
+ 
 	#the function nan_to_num replace nan with zero and inf with large finite numbers. 
 	vec_1D_per_subject_static=np.nan_to_num(vec_1D_per_subject_static)
 	
@@ -189,9 +192,16 @@ def plot_ROC(roc_x,roc_y):
  	#roc_x =[0]+roc_x+[1] #np.append(roc_x, [1])
 	#roc_y =[0]+roc_y+[1] #np.append(roc_y, [1])
 	
-	list_x=roc_x
-	list_y=roc_y
-	roc_auc= auc(roc_x, roc_y)
+
+        list_x= roc_x  
+	list_y=  roc_y  
+	#list_x= np.insert(roc_x, 1, 0) 
+	#list_y= np.insert(roc_y, 1, 0) 
+	#list_x= np.insert(roc_x, 0, len(list_x)) 
+	#list_y= np.insert(roc_y, 0, len(list_y)) 
+
+  
+	roc_auc= auc(list_x, list_y)
 	lw = 2
 	plt.plot(list_x,list_y, color='darkorange',lw=lw, label='ROC curve (area = %0.2f)' % roc_auc)
 	plt.plot([0, 1], [0, 1], color='navy', lw=lw, linestyle='--')
