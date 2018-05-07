@@ -4,7 +4,7 @@ import math as mt
 import matplotlib.pyplot as plt
 
 from sklearn import svm
-from sklearn.model_selection import train_test_split, LeaveOneOut
+from sklearn.model_selection import LeaveOneOut
 from sklearn.metrics import auc
 
 #this function cut each subject in three subparts
@@ -37,34 +37,32 @@ def window_per_people(subject):
 	return set_window
 
 	
-# this function compute the correlation matrix
+# this function computes the correlation matrix
 
 def static_connectivity_matrix(subject):
 	corr= np.corrcoef(subject)	
 	return corr 
 	
-#this function flat the connectivity matrix in 1D
+#this function flats the static connectivity matrix in 1D
 def features(correlation_matrix_static):
 
 	corr= correlation_matrix_static
 	vec_1D_per_subject_static=[0]
 		
 	#we take triangular superior of the correlation matrix 
-	triangular_sup = np.triu(corr,k=1)
-	'''
+	triangular_sup = np.triu(corr,k=0)
+	
 	#transformation of the triangular matrix in 1D vector  
 	vec_1D_per_subject_static=vec_1D_per_subject_static+list(triangular_sup[np.triu_indices(96)])
 	
 	del vec_1D_per_subject_static[0]# delete the initial value
-        '''	 
-        rows, cols = np.nonzero(triangular_sup)
-        vec_1D_per_subject_static = triangular_sup[rows, cols]
- 
+	 
 	#the function nan_to_num replace nan with zero and inf with large finite numbers. 
 	vec_1D_per_subject_static=np.nan_to_num(vec_1D_per_subject_static)
 	
 	return vec_1D_per_subject_static
-	
+
+#this function flats the dynamical connectivity matrix in 1D
 def dynamical_connectivity(win_set):
 	set_window= win_set
 	
@@ -83,10 +81,6 @@ def dynamical_connectivity(win_set):
 	
 # Cross validation
 def Leave_one_out(X,y):
-
-	# conversion of lists to array
-	#X=np.asarray(X)
-	#y=np.asarray(y)
 	
 	loo = LeaveOneOut()
 	n=143
@@ -111,10 +105,8 @@ def Leave_one_out(X,y):
 		X_test=X[test_index[0]]
 		y_test=y[test_index[0]]
 		
-		#print('X train length',len(X_train),' y train length',len(y_train))
 		clf = svm.SVC(kernel='linear', probability=True).fit(X_train, y_train)
-		#print(X_test.shape)
-		#print(len(X_test))
+
 		probs = clf.predict_proba(X_test.reshape(1,-1))
 		score[count] = probs[:,0]
 		count+=1
@@ -127,37 +119,9 @@ def Leave_one_out(X,y):
 		y_test=[]
 	
 	return score
-'''
-	loo = LeaveOneOut()
-	score = np.zeros(144)
-	count = 0
-	train_X=np.zeros(143)
-	train_y=np.zeros(143)
-	test_X=[0]
-	test_y=[0]
-	for train_index, test_index in loo.split(X):
-		#print(train_index.shape,test_index.shape)
-		for i in range(len(train_index)):
-			train_X[i]=X[train_index[i]]
-			train_y[i]=y[train_index[i]]
-		test_X=X[test_index[0]]
-		test_y=y[test_index[0]]
-		clf = svm.SVC(kernel='linear', probability=True).fit(train_X, train_y)
-		probs = clf.predict_proba(test_X)
-		score[count] = probs[:,0]
-		count+=1
 
-	return score 
-'''	
-
-'''
 	
-	print(' lenght xtrain',len(X_train),' lenght xtest',len(X_test),' lenght ytrain', len(y_train),' lenght ytest', len(y_test))
-	
-	return X_train, X_test, y_train , y_test
-'''
-	
-def Alessandro_ROC(y_preditc_proba,ytest):
+def Alessandro_ROC(y_preditc_proba,y):
 	score=y_preditc_proba
 	roc_x = []
 	roc_y = []
@@ -166,15 +130,15 @@ def Alessandro_ROC(y_preditc_proba,ytest):
 	thr = np.linspace(min_score, max_score, 30)
 	FP=0
 	TP=0
-	P = sum(ytest)
-	N = len(ytest) - P
+	P = sum(y)
+	N = len(y) - P
 	for (i,T) in enumerate(thr):
 		for i in range(0, len(score)):
 			if (score[i] > T):
 
-				if (ytest[i]==1):
+				if (y[i]==1):
 					TP = TP + 1
-				if (ytest[i]==0):
+				if (y[i]==0):
 					FP = FP + 1
 		
 		roc_x.append(FP/float(N))
@@ -185,23 +149,12 @@ def Alessandro_ROC(y_preditc_proba,ytest):
 	return  roc_x,roc_y
 
 #Plotting of a ROC curve for a specific class
-def plot_ROC(roc_x,roc_y):
+def plot_ROC(roc_x,roc_y,roc_name):
 
-	#roc_x.insert(0,0)
-	#roc_y.insert(0,0)
- 	#roc_x =[0]+roc_x+[1] #np.append(roc_x, [1])
-	#roc_y =[0]+roc_y+[1] #np.append(roc_y, [1])
 	
-
-        list_x= roc_x  
-	list_y=  roc_y  
-	#list_x= np.insert(roc_x, 1, 0) 
-	#list_y= np.insert(roc_y, 1, 0) 
-	#list_x= np.insert(roc_x, 0, len(list_x)) 
-	#list_y= np.insert(roc_y, 0, len(list_y)) 
-
-  
-	roc_auc= auc(list_x, list_y)
+	list_x=roc_x
+	list_y=roc_y
+	roc_auc= auc(roc_x, roc_y)
 	lw = 2
 	plt.plot(list_x,list_y, color='darkorange',lw=lw, label='ROC curve (area = %0.2f)' % roc_auc)
 	plt.plot([0, 1], [0, 1], color='navy', lw=lw, linestyle='--')
@@ -209,19 +162,18 @@ def plot_ROC(roc_x,roc_y):
 	plt.ylim([0.0, 1.05])
 	plt.xlabel('False Positive Rate')
 	plt.ylabel('True Positive Rate')
-	plt.title('Receiver operating characteristic')
+	plt.title(str(roc_name)+' ROC')
 	plt.legend(loc="lower right")
 	plt.show()
 
 #This function does the experiment with the static connectivity
-def first_experiment_static(sz_one_dim, control_one_dim, y):
+def first_experiment_static(sz_one_dim, control_one_dim, y,roc_name):
 	
 	#matrix of all subject in schizophrenia and control healthy
 	allSubjects_dFC_matrices_SZ=sz_one_dim
 	allSubjects_dFC_matrices_control=control_one_dim
 	
-	# concatenation of the two matrix i.e the whole datset
-	#X=sum([allSubjects_dFC_matrices_SZ+allSubjects_dFC_matrices_control],[])
+	# concatenation of the two matrix i.e the whole dataset
 	X =  np.concatenate((allSubjects_dFC_matrices_SZ, allSubjects_dFC_matrices_control), axis=0)
         print(np.shape(X))
 	y_preditc_proba=Leave_one_out(X,y)
@@ -229,29 +181,16 @@ def first_experiment_static(sz_one_dim, control_one_dim, y):
 	#y_preditc_proba=clf.predict_proba(xtrain)[:,1]
 	
 	roc_x,roc_y =Alessandro_ROC(y_preditc_proba,y)
-	#roc_x,roc_y =Alessandro_ROC(y_preditc_proba,ytrain)
-	#fpr, tpr, _ = roc_curve(ytest, y_preditc_proba)
-	#fpr, tpr, _ = roc_curve(ytrain, y_preditc_proba)
 	
-	#we plot the ROC curve
-	plot_ROC(roc_y,roc_x)
-	#plot_ROC(tpr,fpr)
-
-'''	
-	X_train, X_test, y_train , y_test=Leave_one_out(X,y)
-	
-	#Classification SVM with kernel=linear
-	clf = svm.SVC(kernel='linear', probability=True)
-	clf.fit(X_train, y_train) 
-	
-	#we transform the data xtest in probability
-	y_preditc_proba=clf.predict_proba(X_test)[:,1] #[:,1] means the probability of label being 1
-'''
+	#plotting the ROC curve
+	plot_ROC(roc_y,roc_x,roc_name)
 
 
-# This function does the experiment with the dynamic connectivity
+# This function does the experiment with the dynamical connectivity
 def second_experiment_dynamic(sz_dynamic_one_dim,control_dynamic_one_dim,y):
-	first_experiment_static(sz_dynamic_one_dim,control_dynamic_one_dim,y)
+
+	roc_name = 'Dynamical Connectivity'
+	first_experiment_static(sz_dynamic_one_dim,control_dynamic_one_dim,y,roc_name)
 
 
 if __name__=="__main__":
@@ -282,13 +221,14 @@ if __name__=="__main__":
 		win_set = window_per_people(subject)
 		control_dynamic_one_dim.append(dynamical_connectivity(win_set))
 	print np.shape(control_one_dim)
+
 	#notation
 	y=np.zeros(144)
 	y[0:70]=1    #subject get the schizophrenia
 	y[70:144]=0  #subject healthy
 		
 	
-	
 	#the two experiments
-	#first_experiment_static(sz_one_dim,control_one_dim,y)
+	roc_name = 'Static Connectivity'
+	first_experiment_static(sz_one_dim,control_one_dim,y,roc_name)
 	second_experiment_dynamic(sz_dynamic_one_dim,control_dynamic_one_dim,y)
