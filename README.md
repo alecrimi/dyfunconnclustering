@@ -12,3 +12,5 @@ Please cite the paper https://www.biorxiv.org/content/early/2018/08/04/385146
 
 Overlaps in Brain Dynamic Functional Connectivity between Schizophrenia and Autism Spectrum Disorder
 Andry Andriamananjara, Rayan Muntari, Alessandro Crimi
+
+The flexibility analysis relies on the generalized Louvain Modularity script from https://github.com/GenLouvain/GenLouvain
