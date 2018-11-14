@@ -13,4 +13,6 @@ Please cite the paper https://www.biorxiv.org/content/early/2018/08/04/385146
 Overlaps in Brain Dynamic Functional Connectivity between Schizophrenia and Autism Spectrum Disorder
 Andry Andriamananjara, Rayan Muntari, Alessandro Crimi
 
-The flexibility analysis relies on the generalized Louvain Modularity script from https://github.com/GenLouvain/GenLouvain
+The clustering relies on the generalized Louvain Modularity script from https://github.com/GenLouvain/GenLouvain
+while our code about flexibility index in Python is based on the Matlab script of D.Basset http://commdetect.weebly.com/
+
