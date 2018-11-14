@@ -1,3 +1,5 @@
+# Code written by R.Muntari and A.Andriamananjara to compute 5-window dynamic functional connectivity in a given dataset
+
 import numpy as np
 import os
 import math as mt
@@ -6,8 +8,6 @@ import matplotlib.pyplot as plt
 from sklearn import svm
 from sklearn.model_selection import train_test_split, LeaveOneOut
 from sklearn.metrics import auc
-
-#this function cut each subject in three subparts
 
 def window_per_people(subject):
 
@@ -45,44 +45,7 @@ def window_per_people(subject):
                         elif (j<size_w*5 and j>=size_w*4):
 				w=line_btd[j]
 				window_five[i][j-size_w*5]=w # put in the third window
-                        ''' 
-                        elif (j<size_w*6 and j>=size_w*5):
-	 			w=line_btd[j]
-				window_six[i][j-size_w*6]=w  
-                        
-                        elif (j<size_w*7 and j>=size_w*6):
-	 			w=line_btd[j]
-				window_seven[i][j-size_w*7]=w 
-                        
-                        elif (j<size_w*8 and j>=size_w*7):
-	 			w=line_btd[j]
-				window_8[i][j-size_w*8]=w 
-                        
-                        elif (j<size_w*9 and j>=size_w*8):
-	 			w=line_btd[j]
-				window_9[i][j-size_w*9]=w 
-                        
-                        elif (j<size_w*10 and j>=size_w*9):
-	 			w=line_btd[j]
-				window_10[i][j-size_w*10]=w 
-                                 
-                        elif (j<size_w*11 and j>=size_w*10):
-	 			w=line_btd[j]
-				window_11[i][j-size_w*11]=w 
-                        
-                        elif (j<size_w*12 and j>=size_w*11):
-	 			w=line_btd[j]
-				window_12[i][j-size_w*12]=w 
-                        
-                        elif (j<size_w*13 and j>=size_w*12):
-	 			w=line_btd[j]
-				window_13[i][j-size_w*13]=w 
-                        
-                        elif (j<size_w*14 and j>=size_w*13):
-	 			w=line_btd[j]
-				window_14[i][j-size_w*14]=w 
-			'''
-	set_window=[window_one, window_two, window_three  , window_four, window_five ] #   , window_six , window_seven, window_8 , window_9 , window_10, window_11 , window_12, window_13, window_14
+                    	set_window=[window_one, window_two, window_three  , window_four, window_five ] 
 	return set_window
 
 	
@@ -242,14 +205,12 @@ def plot_ROC(roc_x,roc_y):
  	#roc_x =[0]+roc_x+[1] #np.append(roc_x, [1])
 	#roc_y =[0]+roc_y+[1] #np.append(roc_y, [1])
 	
-
         list_x= roc_x  
 	list_y=  roc_y  
 	#list_x= np.insert(roc_x, 1, 0) 
 	#list_y= np.insert(roc_y, 1, 0) 
 	#list_x= np.insert(roc_x, 0, len(list_x)) 
 	#list_y= np.insert(roc_y, 0, len(list_y)) 
-
   
 	roc_auc= auc(list_x, list_y)
 	lw = 2
