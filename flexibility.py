@@ -7,6 +7,10 @@
 #   between adjacent time points. In multislice/categorical networks,
 #   module allegiance changes are possible between any pairs of slices.
 #
+#   This metric was defined by Bassett, Danielle S., et al. 
+#   in "Dynamic reconfiguration of human brain networks during learning." 
+#   Proceedings of the National Academy of Sciences (2011).
+#
 #   This script expects to load a matrix S, pxn  of community assignments 
 #   where p is the number of slices/layers and n the number of nodes
 #
